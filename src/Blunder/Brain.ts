@@ -1,43 +1,39 @@
-import BlunderMap from "../Map/Map";
-import Point from "../Map/Point";
-import Blunder, { Path } from "./Blunder";
-import { DIRECTIONS } from "./Movement";
+import { Path, State } from "./Blunder";
+import { Direction } from "./Movement";
 
 class Brain {
-  private blunder: Blunder;
-
-  public constructor(blunder: Blunder) {
-    this.blunder = blunder;
-  }
-
-  CheckForInfiniteLoop = (): boolean => {
-    let currentPoint: Point = this.blunder.currentPoint;
-    let currentDir: DIRECTIONS = this.blunder.currentDirection;
+  public checkForInfiniteLoop = (path: Path[]): boolean => {
     let occ: number[] = [];
-    for (let i = 0; i < this.blunder.path.length - 1; i++) {
-      let pathPoint: Path = this.blunder.path[i];
+
+    // Get all occurences of path inside an array of path
+    for (let i = 0; i < path.length; i++) {
+      let pathPoint: Path = path[i];
       if (
-        currentPoint.ComparePoint(pathPoint.point) &&
-        currentDir === pathPoint.direction
+        path[path.length - 1].point.comparePoint(pathPoint.point) &&
+        path[path.length - 1].direction === pathPoint.direction
       )
         occ.push(i);
     }
+
+    // If number of occurences is >= 3, then a loop is possible
+    // Check all path points between fist and second occurences, and between second and third occurences
+    // If they have the same exact points, then it's a loop
     if (occ.length > 2) {
       let checkedCounter = 0;
       let isLoop = true;
 
+      let i = 0,
+        j = 0;
       while (checkedCounter < occ.length - 1) {
-        let i = 0,
-          j = 0;
         for (
-          i = occ[checkedCounter], j = occ[checkedCounter + 1];
+          i = occ[checkedCounter] + 1, j = occ[checkedCounter + 1] + 1;
           j < occ[checkedCounter + 2];
           i++, j++
         ) {
-          let p1 = this.blunder.path[i];
-          let p2 = this.blunder.path[j];
+          let p1 = path[i];
+          let p2 = path[j];
           if (
-            !p1.point.ComparePoint(p2.point) ||
+            !p1.point.comparePoint(p2.point) ||
             p1.direction !== p2.direction
           ) {
             isLoop = false;
@@ -46,81 +42,66 @@ class Brain {
         }
         checkedCounter++;
       }
-
       return isLoop;
     }
   };
 
-  CheckForSpecialBehaviour = () => {
-    switch (this.blunder.currentPoint.character) {
+  public checkForSpecialBehaviour = (state: State): State => {
+    switch (state.currentPoint.character) {
       case " ":
         break;
+      case "@":
+        break;
       case "B":
-        this.blunder.breakerMode = !this.blunder.breakerMode;
+        state.breakerMode = !state.breakerMode;
         break;
       case "I":
-        this.blunder.directions = this.blunder.directions.reverse();
+        state.directions = state.directions.reverse();
         break;
       case "X":
-        BlunderMap.Instance.RemoveObstacle(this.blunder.currentPoint);
+        state.willDestroyObstacle = true;
         break;
       case "$":
-        this.blunder.endReached = true;
+        state.endReached = true;
         break;
       case "T":
-        this.blunder.movement.Teleport();
+        state.willTeleport = true;
         break;
       default:
-        if ("NWES".indexOf(this.blunder.currentPoint.character) > -1) {
-          this.ChangeDirectionExplicitly();
-          this.blunder.explicitDirection = true;
+        if ("NWES".indexOf(state.currentPoint.character) > -1) {
+          state.currentDirection = this.changeDirectionExplicitly(state);
         } else
           throw new Error(
-            `Unexpected value in the map: [${this.blunder.currentPoint.character}]`
+            `Unexpected value in the map: [${state.currentPoint.character}]`
           );
         break;
     }
+
+    return state;
   };
 
-  ChangeDirectionExplicitly = (): void => {
-    switch (this.blunder.currentPoint.character) {
+  private changeDirectionExplicitly = (state: State): Direction => {
+    let newDir: Direction;
+    switch (state.currentPoint.character) {
       case "N":
-        this.blunder.currentDirection = DIRECTIONS.NORTH;
+        newDir = Direction.NORTH;
         break;
       case "E":
-        this.blunder.currentDirection = DIRECTIONS.EAST;
+        newDir = Direction.EAST;
         break;
       case "S":
-        this.blunder.currentDirection = DIRECTIONS.SOUTH;
+        newDir = Direction.SOUTH;
         break;
       case "W":
-        this.blunder.currentDirection = DIRECTIONS.WEST;
+        newDir = Direction.WEST;
         break;
       default:
-        break;
-    }
-  };
-
-  public printPath = (extended: boolean = false) => {
-    if (!extended)
-      for (let p of this.blunder.path) console.log(DIRECTIONS[p.direction]);
-    else {
-      for (let i = 1; i < this.blunder.path.length; i++)
-        console.log(
-          "FROM " +
-            this.blunder.path[i - 1].point.toString() +
-            " [" +
-            this.blunder.path[i - 1].point.character +
-            "]  " +
-            "  -  TO " +
-            this.blunder.path[i].point.toString() +
-            " [" +
-            this.blunder.path[i].point.character +
-            "]  " +
-            "  -  DIRECTION = " +
-            DIRECTIONS[this.blunder.path[i - 1].direction]
+        throw new Error(
+          `Unexpected character: Expected: [N, E, S, W], found: ${state.currentPoint.character}`
         );
     }
+
+    return newDir;
   };
 }
 

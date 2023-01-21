@@ -1,21 +1,19 @@
-import Blunder from "../Blunder/Blunder";
-import { DIRECTIONS } from "../Blunder/Movement";
+import Blunder, { State } from "../Blunder/Blunder";
+import { Direction } from "../Blunder/Movement";
 import Point from "./Point";
 
 class BlunderMap {
-  public static Instance: BlunderMap;
-  public static StartPoint: Point;
-  public static EndPoint: Point;
-  public static portals: Point[];
+  public startPoint: Point;
+  public endPoint: Point;
+  public portals: Point[];
 
-  mapArray: string[];
+  private mapArray: string[];
 
   constructor(mapArray: string[]) {
     this.mapArray = mapArray;
-    BlunderMap.Instance = this;
-    BlunderMap.StartPoint = this.getPointByValue("@") as Point;
-    BlunderMap.EndPoint = this.getPointByValue("$") as Point;
-    BlunderMap.portals = this.getPointByValue("T", true) as Point[];
+    this.startPoint = this.getPointByValue("@") as Point;
+    this.endPoint = this.getPointByValue("$") as Point;
+    this.portals = this.getPointByValue("T", true) as Point[];
   }
 
   private getPointByPosition = (x: number, y: number): Point => {
@@ -25,11 +23,14 @@ class BlunderMap {
       x < 0 ||
       y < 0;
 
-    if (outOfBoundaries) return new Point("", x, y, true);
+    if (outOfBoundaries) {
+      throw new Error(`Point out of map boundaries [${x}, ${y}]`);
+    }
+
     return new Point(this.mapArray[y][x], x, y);
   };
 
-  private getPointByValue = (
+  protected getPointByValue = (
     value: string,
     multiple: boolean = false
   ): Point | Point[] => {
@@ -44,29 +45,29 @@ class BlunderMap {
     return occ;
   };
 
-  public GetPoint = (direction: DIRECTIONS): Point => {
+  public getPoint = (direction: Direction, point: Point): Point => {
     let x, y: number;
     let nextPoint: Point;
-    x = Blunder.Instance.currentPoint.x;
-    y = Blunder.Instance.currentPoint.y;
+    x = point.x;
+    y = point.y;
 
     switch (direction) {
-      case DIRECTIONS.EAST:
-        nextPoint = BlunderMap.Instance.getPointByPosition(x + 1, y);
+      case Direction.EAST:
+        nextPoint = this.getPointByPosition(x + 1, y);
         return nextPoint;
-      case DIRECTIONS.NORTH:
-        nextPoint = BlunderMap.Instance.getPointByPosition(x, y - 1);
+      case Direction.NORTH:
+        nextPoint = this.getPointByPosition(x, y - 1);
         return nextPoint;
-      case DIRECTIONS.SOUTH:
-        nextPoint = BlunderMap.Instance.getPointByPosition(x, y + 1);
+      case Direction.SOUTH:
+        nextPoint = this.getPointByPosition(x, y + 1);
         return nextPoint;
-      case DIRECTIONS.WEST:
-        nextPoint = BlunderMap.Instance.getPointByPosition(x - 1, y);
+      case Direction.WEST:
+        nextPoint = this.getPointByPosition(x - 1, y);
         return nextPoint;
     }
   };
 
-  public RemoveObstacle = (point: Point) => {
+  public removeObstacle = (point: Point) => {
     let arr = [...this.mapArray[point.y]];
     arr[point.x] = " ";
     this.mapArray[point.y] = arr.join("");
