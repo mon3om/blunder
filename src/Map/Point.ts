@@ -1,4 +1,4 @@
-import Blunder, { State } from "../Blunder/Blunder";
+import Blunder, { State } from "../blunder/blunder";
 
 class Point {
   public x: number;

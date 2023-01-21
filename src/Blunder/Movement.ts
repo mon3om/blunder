@@ -1,6 +1,6 @@
-import BlunderMap from "../Map/Map";
-import Point from "../Map/Point";
-import Blunder, { State } from "./Blunder";
+import BlunderMap from "../map/map";
+import Point from "../map/point";
+import Blunder, { State } from "./blunder";
 
 export enum Direction {
   SOUTH,

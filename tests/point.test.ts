@@ -1,4 +1,4 @@
-import Blunder from "../src/Blunder/Blunder";
+import Blunder from "../src/blunder/Blunder";
 import Point from "../src/Map/Point";
 
 describe("Check if point is accessible - ( )", () => {

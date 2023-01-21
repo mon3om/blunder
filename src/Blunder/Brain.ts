@@ -1,5 +1,5 @@
-import { Path, State } from "./Blunder";
-import { Direction } from "./Movement";
+import { Path, State } from "./blunder";
+import { Direction } from "./movement";
 
 class Brain {
   public checkForInfiniteLoop = (path: Path[]): boolean => {

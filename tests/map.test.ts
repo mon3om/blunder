@@ -1,5 +1,5 @@
-import Blunder from "../src/Blunder/Blunder";
-import { Direction } from "../src/Blunder/Movement";
+import Blunder from "../src/blunder/Blunder";
+import { Direction } from "../src/blunder/Movement";
 import BlunderMap from "../src/Map/Map";
 import Point from "../src/Map/Point";
 

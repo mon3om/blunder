@@ -1,6 +1,6 @@
-import Blunder, { State } from "../Blunder/Blunder";
-import { Direction } from "../Blunder/Movement";
-import Point from "./Point";
+import Blunder, { State } from "../blunder/blunder";
+import { Direction } from "../blunder/movement";
+import Point from "./point";
 
 class BlunderMap {
   public startPoint: Point;

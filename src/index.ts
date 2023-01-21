@@ -1,4 +1,4 @@
-import Blunder from "./Blunder/Blunder";
+import Blunder from "./blunder/blunder";
 
 let map = [
   "##########",

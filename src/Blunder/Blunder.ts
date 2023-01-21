@@ -1,7 +1,7 @@
-import BlunderMap from "../Map/Map";
-import Point from "../Map/Point";
-import Brain from "./Brain";
-import Movement, { Direction } from "./Movement";
+import BlunderMap from "../map/map";
+import Point from "../map/point";
+import Brain from "./brain";
+import Movement, { Direction } from "./movement";
 
 export type Path = {
   point: Point;
