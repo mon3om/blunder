@@ -1,3 +1,7 @@
+/**
+ * Copy and paste the content of this file in Coding Games console after clearing it
+ */
+
 export type Path = {
   point: Point;
   direction: Direction;
