@@ -1,5 +1,5 @@
 import { Path, State } from "./blunder";
-import { Direction } from "./movement";
+import Movement, { Direction } from "./movement";
 
 class Brain {
   public checkForInfiniteLoop = (path: Path[]): boolean => {
@@ -69,7 +69,7 @@ class Brain {
         break;
       default:
         if ("NWES".indexOf(state.currentPoint.character) > -1) {
-          state.currentDirection = this.changeDirectionExplicitly(state);
+          state.currentDirection = Movement.changeDirectionExplicitly(state);
         } else
           throw new Error(
             `Unexpected value in the map: [${state.currentPoint.character}]`
@@ -78,30 +78,6 @@ class Brain {
     }
 
     return state;
-  };
-
-  private changeDirectionExplicitly = (state: State): Direction => {
-    let newDir: Direction;
-    switch (state.currentPoint.character) {
-      case "N":
-        newDir = Direction.NORTH;
-        break;
-      case "E":
-        newDir = Direction.EAST;
-        break;
-      case "S":
-        newDir = Direction.SOUTH;
-        break;
-      case "W":
-        newDir = Direction.WEST;
-        break;
-      default:
-        throw new Error(
-          `Unexpected character: Expected: [N, E, S, W], found: ${state.currentPoint.character}`
-        );
-    }
-
-    return newDir;
   };
 }
 
