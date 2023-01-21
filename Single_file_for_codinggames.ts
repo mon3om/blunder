@@ -1,5 +1,5 @@
 /**
- * Copy and paste the content of this file in Coding Games console after clearing it
+ * Copy and paste the content of this file in Coding Games IDE after clearing it
  */
 
 export type Path = {
